@@ -1,0 +1,79 @@
+import csv
+import pprint
+import operator
+import os
+from tabulate import tabulate
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+#COLLECT DATA FROM CSV FILE
+array = []
+i = 0
+print("Code Importing data records from the CSV File name: <datagovdatasetsviewmetrics.csv>")
+with open('C:\Python27\Scripts\datagovdatasetsviewmetrics.csv') as f:
+    reader = csv.reader(f)
+    for row in reader:
+    	i = i + 1
+    	array.append(row)
+
+
+
+#PRINT DATA RESULT FROM CSV FILE
+print("Total Number of records imported from CSV File: {}\n".format(i-1))
+print("Top Ten Organization's Result:")
+
+#elimination of not needed sets of records to save memory and allow for grouping computation
+del array[0]
+for item in array:
+	del item[4]
+	del item[1]
+	del item[0]
+	item[1] = int(item[1])
+
+
+
+#CREATING GROUP ARRAY
+arrayone = []
+for item in array:
+	k = 0
+	for i in range(0,len(arrayone)):
+		if item[0] in arrayone[i][0]:
+			arrayone[i][1] = arrayone[i][1] + item[1]
+			k = 1
+	if k == 0:
+		arrayone.append(item)
+
+
+
+#SORT ARRAY IN REVERSE ORDER
+arrayone = sorted(arrayone, key=operator.itemgetter(1), reverse=True)
+
+#CREATE ARRAY OF TOP 10 HIGHEST RESULTS
+i = 0
+toptenarray = []
+x = []
+y = []
+for item in arrayone:
+	if i < 10:
+		toptenarray.append(item)
+		x.append(item[0])
+		y.append(item[1])
+		i += 1
+
+  
+#CREATE AND PRETTY PRINT A TABLE TO SHOW THE TOP TEN ORGANIZATION'S RESULT
+print tabulate(toptenarray, tablefmt="fancy_grid")
+
+
+
+#PLOT A BAR CHART BASED ON PRETTY PRINT'S 10 HIGHEST RESULTS 
+bar_width = 0.65
+xl = np.arange(len(y))
+fig, ax = plt.subplots()
+ax.bar(xl, y, width=bar_width, facecolor = 'lime')
+ax.set_xticks(xl + (bar_width/1.5))
+ax.set_xticklabels(x, rotation=30, fontsize=8, horizontalalignment = 'right', verticalalignment = 'top')
+plt.show()
+os.system("pause") 
